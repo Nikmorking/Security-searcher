@@ -65,7 +65,7 @@
             this.checkedListBox1.FormattingEnabled = true;
             this.checkedListBox1.Location = new System.Drawing.Point(22, 40);
             this.checkedListBox1.Name = "checkedListBox1";
-            this.checkedListBox1.Size = new System.Drawing.Size(487, 310);
+            this.checkedListBox1.Size = new System.Drawing.Size(555, 310);
             this.checkedListBox1.TabIndex = 3;
             // 
             // delete
@@ -80,7 +80,7 @@
             // 
             // Open
             // 
-            this.Open.Location = new System.Drawing.Point(614, 234);
+            this.Open.Location = new System.Drawing.Point(614, 272);
             this.Open.Name = "Open";
             this.Open.Size = new System.Drawing.Size(142, 45);
             this.Open.TabIndex = 5;
@@ -103,7 +103,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 25);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(789, 418);
+            this.tabPage1.Size = new System.Drawing.Size(793, 419);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
