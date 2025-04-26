@@ -44,7 +44,7 @@ namespace WindowsFormsApp1
         private static void load()
         {
 
-            int a = 0; //Попа сися кака
+            int a;
 
 
 
