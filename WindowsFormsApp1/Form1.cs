@@ -5,6 +5,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using IWshRuntimeLibrary;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -38,9 +39,10 @@ namespace WindowsFormsApp1
         private string[] paths_array = new string[6] { "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", "SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Run", "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run", "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", "SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Run", "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run" };
         private void button2_Click(object sender, EventArgs e)
         {
-            checkedListBox1.Items.Clear(); //Очищает список
-            add_list(Registry.CurrentUser);//
-            add_list(Registry.LocalMachine);
+            checkedListBox2.Items.Clear(); //Очищает список
+            checkedListBox3.Items.Clear(); //Очищает список
+            add_list(Registry.CurrentUser, checkedListBox2);
+            add_list(Registry.LocalMachine, checkedListBox3);
         }
         private static void load()
         {
@@ -107,12 +109,9 @@ namespace WindowsFormsApp1
             }
         }
 
-        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-        private string put = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)+@"\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup";
-        private void button1_Click(object sender, EventArgs e)
+        private string put = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup";
+        
+        private void reload()
         {
             DirectoryInfo dir = new DirectoryInfo(put);
             checkedListBox1.Items.Clear();
@@ -122,6 +121,12 @@ namespace WindowsFormsApp1
                 checkedListBox1.Items.Add(files[i]);
             }
         }
+        private void button1_Click(object sender, EventArgs e)
+        {
+            reload();
+        }
+
+
 
         private void delete_Click(object sender, EventArgs e)
         {
@@ -133,11 +138,51 @@ namespace WindowsFormsApp1
                     item.Delete();
                 }
             }
+            reload();
         }
 
-        private void Open_Click(object sender, EventArgs e)
+        private void button4_Click(object sender, EventArgs e)
         {
             Process.Start(put);
+        }
+
+        private void Add__Click(object sender, EventArgs e)
+        {
+            var filePath = string.Empty;
+
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.InitialDirectory = "c:\\";
+                openFileDialog.Filter = "Program (*.exe)|*.exe";
+                openFileDialog.FilterIndex = 2;
+                openFileDialog.RestoreDirectory = true;
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    //Get the path of specified file
+                    filePath = openFileDialog.FileName;
+                }
+            }
+            if (filePath != null)
+            {
+                WshShell shell = new WshShell();
+
+                string[] name = filePath.Split(Convert.ToChar(@"\"));
+                //путь к ярлыку
+                string shortcutPath = put + @"\" + name[name.Length-1].Split('.')[0] + @".lnk";
+
+                //создаем объект ярлыка
+                IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(shortcutPath);
+
+                //задаем свойства для ярлыка
+                //описание ярлыка в всплывающей подсказке
+                shortcut.Description = "Ярлык для текстового редактора";
+                //путь к самой программе
+                shortcut.TargetPath = filePath;
+                //Создаем ярлык
+                shortcut.Save();
+            }
+            reload();
         }
     }
 }
