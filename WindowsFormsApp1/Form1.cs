@@ -21,26 +21,26 @@ namespace WindowsFormsApp1
             InitializeComponent();
         }
 
-        private void add_list(RegistryKey key)
+        private void add_list(RegistryKey key, CheckedListBox box)
         {
             for (int c = 0; c < 6; c++)
             {
-                if (Registry.CurrentUser.OpenSubKey(paths_array[c]) != null)
+                if (key.OpenSubKey(paths_array[c]) != null)
                 {
                     string[] a = key.OpenSubKey(paths_array[c]).GetValueNames();
                     for (int i = 0; i < a.Length; i++)
                     {
-                        checkedListBox1.Items.Add(a[i]);
+                        box.Items.Add(a[i]);
                     }
                 }
             }
         }
         private string[] paths_array = new string[6] { "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", "SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Run", "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run", "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", "SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Run", "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run" };
-        private void button1_Click(object sender, EventArgs e)
+        private void button2_Click(object sender, EventArgs e)
         {
             checkedListBox1.Items.Clear(); //Очищает список
-            add_list(Registry.CurrentUser);//
-            add_list(Registry.LocalMachine);
+            add_list(Registry.CurrentUser, checkedListBox2);
+            add_list(Registry.LocalMachine, checkedListBox3);
         }
         private static void load()
         {
@@ -112,7 +112,7 @@ namespace WindowsFormsApp1
 
         }
         private string put = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)+@"\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup";
-        private void button2_Click(object sender, EventArgs e)
+        private void button1_Click(object sender, EventArgs e)
         {
             DirectoryInfo dir = new DirectoryInfo(put);
             checkedListBox1.Items.Clear();
