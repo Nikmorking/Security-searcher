@@ -141,10 +141,6 @@ namespace WindowsFormsApp1
             reload();
         }
 
-        private void button4_Click(object sender, EventArgs e)
-        {
-            Process.Start(put);
-        }
 
         private void Add__Click(object sender, EventArgs e)
         {
@@ -183,6 +179,11 @@ namespace WindowsFormsApp1
                 shortcut.Save();
             }
             reload();
+        }
+
+        private void Open_Click(object sender, EventArgs e)
+        {
+            Process.Start(put);
         }
     }
 }
