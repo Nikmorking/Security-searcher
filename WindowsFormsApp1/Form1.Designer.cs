@@ -32,6 +32,7 @@
             this.Folder = new System.Windows.Forms.Button();
             this.checkedListBox1 = new System.Windows.Forms.CheckedListBox();
             this.delete = new System.Windows.Forms.Button();
+            this.Open = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // button1
@@ -72,11 +73,22 @@
             this.delete.UseVisualStyleBackColor = true;
             this.delete.Click += new System.EventHandler(this.delete_Click);
             // 
+            // Open
+            // 
+            this.Open.Location = new System.Drawing.Point(610, 257);
+            this.Open.Name = "Open";
+            this.Open.Size = new System.Drawing.Size(142, 45);
+            this.Open.TabIndex = 5;
+            this.Open.Text = "Open folder";
+            this.Open.UseVisualStyleBackColor = true;
+            this.Open.Click += new System.EventHandler(this.Open_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.Open);
             this.Controls.Add(this.delete);
             this.Controls.Add(this.checkedListBox1);
             this.Controls.Add(this.Folder);
@@ -92,6 +104,7 @@
         private System.Windows.Forms.Button Folder;
         private System.Windows.Forms.CheckedListBox checkedListBox1;
         private System.Windows.Forms.Button delete;
+        private System.Windows.Forms.Button Open;
     }
 }
 

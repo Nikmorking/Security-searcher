@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -37,8 +38,8 @@ namespace WindowsFormsApp1
         private string[] paths_array = new string[6] { "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", "SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Run", "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run", "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", "SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Run", "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run" };
         private void button1_Click(object sender, EventArgs e)
         {
-            checkedListBox1.Items.Clear();
-            add_list(Registry.CurrentUser);
+            checkedListBox1.Items.Clear(); //Очищает список
+            add_list(Registry.CurrentUser);//
             add_list(Registry.LocalMachine);
         }
         private static void load()
@@ -110,9 +111,10 @@ namespace WindowsFormsApp1
         {
 
         }
+        private string put = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)+@"\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup";
         private void button2_Click(object sender, EventArgs e)
         {
-            DirectoryInfo dir = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)+@"\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup");
+            DirectoryInfo dir = new DirectoryInfo(put);
             checkedListBox1.Items.Clear();
             FileInfo[] files = dir.GetFiles();
             for (int i = 0; i < files.Length; i++)
@@ -131,6 +133,11 @@ namespace WindowsFormsApp1
                     item.Delete();
                 }
             }
+        }
+
+        private void Open_Click(object sender, EventArgs e)
+        {
+            Process.Start(put);
         }
     }
 }
