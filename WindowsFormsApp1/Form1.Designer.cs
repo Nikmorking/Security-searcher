@@ -40,11 +40,16 @@
             this.button2 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.Open = new System.Windows.Forms.Button();
             this.Add_ = new System.Windows.Forms.Button();
+            this.Open = new System.Windows.Forms.Button();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.checkedListBox4 = new System.Windows.Forms.CheckedListBox();
+            this.Service_seach = new System.Windows.Forms.Button();
+            this.disable = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            this.tabPage3.SuspendLayout();
             this.SuspendLayout();
             // 
             // button1
@@ -82,6 +87,7 @@
             // 
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Location = new System.Drawing.Point(-1, 1);
             this.tabControl1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tabControl1.Name = "tabControl1";
@@ -100,7 +106,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 25);
             this.tabPage1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(4);
             this.tabPage1.Size = new System.Drawing.Size(721, 419);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Registry";
@@ -181,6 +187,17 @@
             this.tabPage2.Text = "Folder";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // Add_
+            // 
+            this.Add_.Location = new System.Drawing.Point(551, 164);
+            this.Add_.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.Add_.Name = "Add_";
+            this.Add_.Size = new System.Drawing.Size(141, 46);
+            this.Add_.TabIndex = 6;
+            this.Add_.Text = "Add";
+            this.Add_.UseVisualStyleBackColor = true;
+            this.Add_.Click += new System.EventHandler(this.Add__Click);
+            // 
             // Open
             // 
             this.Open.Location = new System.Drawing.Point(551, 315);
@@ -192,16 +209,48 @@
             this.Open.UseVisualStyleBackColor = true;
             this.Open.Click += new System.EventHandler(this.Open_Click);
             // 
-            // Add_
+            // tabPage3
             // 
-            this.Add_.Location = new System.Drawing.Point(551, 164);
-            this.Add_.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.Add_.Name = "Add_";
-            this.Add_.Size = new System.Drawing.Size(141, 46);
-            this.Add_.TabIndex = 6;
-            this.Add_.Text = "Add";
-            this.Add_.UseVisualStyleBackColor = true;
-            this.Add_.Click += new System.EventHandler(this.Add__Click);
+            this.tabPage3.Controls.Add(this.disable);
+            this.tabPage3.Controls.Add(this.Service_seach);
+            this.tabPage3.Controls.Add(this.checkedListBox4);
+            this.tabPage3.Location = new System.Drawing.Point(4, 25);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage3.Size = new System.Drawing.Size(721, 419);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "In services";
+            this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // checkedListBox4
+            // 
+            this.checkedListBox4.FormattingEnabled = true;
+            this.checkedListBox4.Location = new System.Drawing.Point(10, 7);
+            this.checkedListBox4.Name = "checkedListBox4";
+            this.checkedListBox4.Size = new System.Drawing.Size(493, 412);
+            this.checkedListBox4.TabIndex = 0;
+            // 
+            // Service_seach
+            // 
+            this.Service_seach.Location = new System.Drawing.Point(542, 19);
+            this.Service_seach.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.Service_seach.Name = "Service_seach";
+            this.Service_seach.Size = new System.Drawing.Size(141, 41);
+            this.Service_seach.TabIndex = 2;
+            this.Service_seach.Text = "Start search";
+            this.Service_seach.UseVisualStyleBackColor = true;
+            this.Service_seach.Click += new System.EventHandler(this.Service_seach_Click);
+            // 
+            // disable
+            // 
+            this.disable.Location = new System.Drawing.Point(542, 97);
+            this.disable.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.disable.Name = "disable";
+            this.disable.Size = new System.Drawing.Size(141, 41);
+            this.disable.TabIndex = 3;
+            this.disable.Text = "Disable";
+            this.disable.UseVisualStyleBackColor = true;
+            this.disable.Click += new System.EventHandler(this.disable_Click);
             // 
             // Form1
             // 
@@ -216,6 +265,7 @@
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
+            this.tabPage3.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -235,6 +285,10 @@
         private System.Windows.Forms.CheckedListBox checkedListBox3;
         private System.Windows.Forms.Button Open;
         private System.Windows.Forms.Button Add_;
+        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.Button Service_seach;
+        private System.Windows.Forms.CheckedListBox checkedListBox4;
+        private System.Windows.Forms.Button disable;
     }
 }
 
