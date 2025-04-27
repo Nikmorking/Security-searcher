@@ -21,9 +21,20 @@ namespace WindowsFormsApp1
             InitializeComponent();
         }
 
+        private string[] add_path(string[] mass, int index)
+        {
+            string[] c = new string[mass.Length + 1];
+            for (int i = 0; i < c.Length - 1; i++)
+            {
+                c[i] = mass[i];
+            }
+            c[c.Length - 1] = paths_array[index];
+            return (c);
+        }
+
         private void add_list(RegistryKey key, CheckedListBox box)
         {
-            for (int c = 0; c < 6; c++)
+            for (int c = 0; c < 3; c++)
             {
                 if (key.OpenSubKey(paths_array[c]) != null)
                 {
@@ -31,6 +42,14 @@ namespace WindowsFormsApp1
                     for (int i = 0; i < a.Length; i++)
                     {
                         box.Items.Add(a[i]);
+                        if (box == checkedListBox2)
+                        {
+                            user_paths = add_path(user_paths, c);
+                        }
+                        if (box == checkedListBox3)
+                        {
+                            machine_paths = add_path(machine_paths, c);
+                        }
                     }
                 }
             }
@@ -38,7 +57,8 @@ namespace WindowsFormsApp1
         private string[] paths_array = new string[6] { "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", "SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Run", "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run", "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", "SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Run", "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run" };
         private void button2_Click(object sender, EventArgs e)
         {
-            checkedListBox1.Items.Clear(); //Очищает список
+            checkedListBox2.Items.Clear();
+            checkedListBox3.Items.Clear();
             add_list(Registry.CurrentUser, checkedListBox2);
             add_list(Registry.LocalMachine, checkedListBox3);
         }
@@ -138,6 +158,27 @@ namespace WindowsFormsApp1
         private void Open_Click(object sender, EventArgs e)
         {
             Process.Start(put);
+        }
+        private string[] user_paths = new string[0];
+        private string[] machine_paths = new string[0];
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < checkedListBox2.Items.Count; i++)
+            {
+                if (checkedListBox2.GetItemChecked(i))
+                {
+                    Registry.CurrentUser.OpenSubKey(user_paths[i], true).DeleteValue(checkedListBox2.Items[i].ToString());
+                }
+            }
+            for (int i = 0; i < checkedListBox3.Items.Count; i++)
+            {
+                if (checkedListBox3.GetItemChecked(i))
+                {
+                    Registry.CurrentUser.OpenSubKey(user_paths[i], true).DeleteValue(checkedListBox3.GetItemText(i));
+                }
+            }
+            button2_Click(sender, e);
         }
     }
 }
