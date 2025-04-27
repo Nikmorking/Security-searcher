@@ -277,6 +277,7 @@ namespace WindowsFormsApp1
 
         private void service_reload()
         {
+            services = ServiceController.GetServices();
             checkedListBox4.Items.Clear();
             foreach (ServiceController service in services)
             {
@@ -303,7 +304,7 @@ namespace WindowsFormsApp1
                     {
                         if (check[i].ToString() == service.DisplayName)
                         {
-                            ServiceHelper.ChangeStartMode(service, ServiceStartMode.Disabled);
+                            ServiceHelper.ChangeStartMode(service, ServiceStartMode.Manual);
                         }
                     }
                 }
