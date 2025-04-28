@@ -43,9 +43,10 @@
             this.Add_ = new System.Windows.Forms.Button();
             this.Open = new System.Windows.Forms.Button();
             this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.checkedListBox4 = new System.Windows.Forms.CheckedListBox();
-            this.Service_seach = new System.Windows.Forms.Button();
             this.disable = new System.Windows.Forms.Button();
+            this.Service_seach = new System.Windows.Forms.Button();
+            this.checkedListBox4 = new System.Windows.Forms.CheckedListBox();
+            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -211,6 +212,7 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.richTextBox1);
             this.tabPage3.Controls.Add(this.disable);
             this.tabPage3.Controls.Add(this.Service_seach);
             this.tabPage3.Controls.Add(this.checkedListBox4);
@@ -222,17 +224,20 @@
             this.tabPage3.Text = "In Services";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
-            // checkedListBox4
+            // disable
             // 
-            this.checkedListBox4.FormattingEnabled = true;
-            this.checkedListBox4.Location = new System.Drawing.Point(10, 7);
-            this.checkedListBox4.Name = "checkedListBox4";
-            this.checkedListBox4.Size = new System.Drawing.Size(493, 412);
-            this.checkedListBox4.TabIndex = 0;
+            this.disable.Location = new System.Drawing.Point(473, 106);
+            this.disable.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.disable.Name = "disable";
+            this.disable.Size = new System.Drawing.Size(141, 41);
+            this.disable.TabIndex = 3;
+            this.disable.Text = "Disable";
+            this.disable.UseVisualStyleBackColor = true;
+            this.disable.Click += new System.EventHandler(this.disable_Click);
             // 
             // Service_seach
             // 
-            this.Service_seach.Location = new System.Drawing.Point(542, 19);
+            this.Service_seach.Location = new System.Drawing.Point(473, 28);
             this.Service_seach.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Service_seach.Name = "Service_seach";
             this.Service_seach.Size = new System.Drawing.Size(141, 41);
@@ -241,16 +246,22 @@
             this.Service_seach.UseVisualStyleBackColor = true;
             this.Service_seach.Click += new System.EventHandler(this.Service_seach_Click);
             // 
-            // disable
+            // checkedListBox4
             // 
-            this.disable.Location = new System.Drawing.Point(542, 97);
-            this.disable.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.disable.Name = "disable";
-            this.disable.Size = new System.Drawing.Size(141, 41);
-            this.disable.TabIndex = 3;
-            this.disable.Text = "Disable";
-            this.disable.UseVisualStyleBackColor = true;
-            this.disable.Click += new System.EventHandler(this.disable_Click);
+            this.checkedListBox4.FormattingEnabled = true;
+            this.checkedListBox4.Location = new System.Drawing.Point(10, 7);
+            this.checkedListBox4.Name = "checkedListBox4";
+            this.checkedListBox4.Size = new System.Drawing.Size(447, 412);
+            this.checkedListBox4.TabIndex = 0;
+            // 
+            // richTextBox1
+            // 
+            this.richTextBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.richTextBox1.Location = new System.Drawing.Point(473, 176);
+            this.richTextBox1.Name = "richTextBox1";
+            this.richTextBox1.Size = new System.Drawing.Size(239, 236);
+            this.richTextBox1.TabIndex = 4;
+            this.richTextBox1.Text = "Внимание !\nНе отключайте системные службы Windows.\n";
             // 
             // Form1
             // 
@@ -289,6 +300,7 @@
         private System.Windows.Forms.Button Service_seach;
         private System.Windows.Forms.CheckedListBox checkedListBox4;
         private System.Windows.Forms.Button disable;
+        private System.Windows.Forms.RichTextBox richTextBox1;
     }
 }
 
