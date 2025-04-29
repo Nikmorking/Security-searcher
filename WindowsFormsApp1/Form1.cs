@@ -26,7 +26,7 @@ namespace WindowsFormsApp1
 
         private void add_list(RegistryKey key, CheckedListBox box)
         {
-            for (int c = 0; c < 6; c++)
+            for (int c = 0; c < 3; c++)
             {
                 if (key.OpenSubKey(paths_array[c]) != null)
                 {
@@ -34,14 +34,31 @@ namespace WindowsFormsApp1
                     for (int i = 0; i < a.Length; i++)
                     {
                         box.Items.Add(a[i]);
+                        if(box == checkedListBox2)
+                        {
+                            local = add_path(local, paths_array[i]);
+                        }
+                        if (box == checkedListBox3)
+                        {
+                            local = add_path(user, paths_array[i]);
+                        }
                     }
                 }
             }
         }
 
+        private string[] add_path(string[] math, string path)
+        {
+            string[] mass = new string[math.Length];
+            for (int i = 0; i < math.Length - 1; i++)
+                mass[i] = math[i];
+            mass[math.Length - 1] = path;
+            return mass;
+        }
+        private string[] paths_array = new string[3] { "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", "SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Run", "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run" };
+        private string[] local = new string[0];
+        private string[] user = new string[0];
 
-
-        private string[] paths_array = new string[6] { "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", "SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Run", "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run", "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", "SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Run", "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run" };
         private void button2_Click(object sender, EventArgs e)
         {
             checkedListBox2.Items.Clear(); //Очищает список
@@ -305,7 +322,11 @@ namespace WindowsFormsApp1
 
                 CloseServiceHandle(serviceHandle);
                 CloseServiceHandle(scManagerHandle);
-            }
+            }   
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
 
         }
     }
