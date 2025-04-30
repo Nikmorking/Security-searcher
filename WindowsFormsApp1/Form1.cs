@@ -111,16 +111,20 @@ namespace WindowsFormsApp1
         {
 
         }
-        private string put = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)+@"\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup";
+        private string put[] = {Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)+@"\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup", @"";
         private void button1_Click(object sender, EventArgs e)
         {
-            DirectoryInfo dir = new DirectoryInfo(put);
-            checkedListBox1.Items.Clear();
-            FileInfo[] files = dir.GetFiles();
-            for (int i = 0; i < files.Length; i++)
+            forache(string e in put)
             {
-                checkedListBox1.Items.Add(files[i]);
+                DirectoryInfo dir = new DirectoryInfo(e);
+                checkedListBox1.Items.Clear();
+                FileInfo[] files = dir.GetFiles();
+                for (int i = 0; i < files.Length; i++)
+                {
+                    checkedListBox1.Items.Add(files[i]);
+                }
             }
+            
         }
 
         private void delete_Click(object sender, EventArgs e)
@@ -133,6 +137,7 @@ namespace WindowsFormsApp1
                     item.Delete();
                 }
             }
+            button1_Click(sender, e)
         }
 
         private void Open_Click(object sender, EventArgs e)
