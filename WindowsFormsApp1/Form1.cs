@@ -5,12 +5,15 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using IWshRuntimeLibrary;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.ServiceProcess;
 using System.Windows.Forms;
 using Microsoft.Win32;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.Runtime.InteropServices;
 
 namespace WindowsFormsApp1
 {
@@ -23,7 +26,7 @@ namespace WindowsFormsApp1
 
         private void add_list(RegistryKey key, CheckedListBox box)
         {
-            for (int c = 0; c < 6; c++)
+            for (int c = 0; c < 3; c++)
             {
                 if (key.OpenSubKey(paths_array[c]) != null)
                 {
@@ -31,14 +34,35 @@ namespace WindowsFormsApp1
                     for (int i = 0; i < a.Length; i++)
                     {
                         box.Items.Add(a[i]);
+                        if(box == checkedListBox2)
+                        {
+                            local = add_path(local, paths_array[i]);
+                        }
+                        if (box == checkedListBox3)
+                        {
+                            local = add_path(user, paths_array[i]);
+                        }
                     }
                 }
             }
         }
-        private string[] paths_array = new string[6] { "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", "SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Run", "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run", "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", "SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Run", "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run" };
+
+        private string[] add_path(string[] math, string path)
+        {
+            string[] mass = new string[math.Length];
+            for (int i = 0; i < math.Length - 1; i++)
+                mass[i] = math[i];
+            mass[math.Length - 1] = path;
+            return mass;
+        }
+        private string[] paths_array = new string[3] { "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", "SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Run", "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run" };
+        private string[] local = new string[0];
+        private string[] user = new string[0];
+
         private void button2_Click(object sender, EventArgs e)
         {
-            checkedListBox1.Items.Clear(); //Очищает список
+            checkedListBox2.Items.Clear(); //Очищает список
+            checkedListBox3.Items.Clear(); //Очищает список
             add_list(Registry.CurrentUser, checkedListBox2);
             add_list(Registry.LocalMachine, checkedListBox3);
         }
@@ -107,25 +131,25 @@ namespace WindowsFormsApp1
             }
         }
 
-        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
+        private string put = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup";
 
-        }
-        private string put[] = {Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)+@"\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup", @"";
-        private void button1_Click(object sender, EventArgs e)
+        private void reload()
         {
             forache(string e in put)
             {
-                DirectoryInfo dir = new DirectoryInfo(e);
-                checkedListBox1.Items.Clear();
-                FileInfo[] files = dir.GetFiles();
-                for (int i = 0; i < files.Length; i++)
+                if (files[i].Name != "desktop.ini")
                 {
                     checkedListBox1.Items.Add(files[i]);
                 }
             }
             
         }
+        private void button1_Click(object sender, EventArgs e)
+        {
+            reload();
+        }
+
+
 
         private void delete_Click(object sender, EventArgs e)
         {
@@ -137,12 +161,171 @@ namespace WindowsFormsApp1
                     item.Delete();
                 }
             }
-            button1_Click(sender, e)
+            reload();
+        }
+
+
+        private void Add__Click(object sender, EventArgs e)
+        {
+            var filePath = string.Empty;
+
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.InitialDirectory = "c:\\";
+                openFileDialog.Filter = "Program (*.exe)|*.exe";
+                openFileDialog.FilterIndex = 2;
+                openFileDialog.RestoreDirectory = true;
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    //Get the path of specified file
+                    filePath = openFileDialog.FileName;
+                }
+            }
+            if (filePath != null)
+            {
+                WshShell shell = new WshShell();
+
+                string[] name = filePath.Split(Convert.ToChar(@"\"));
+                //путь к ярлыку
+                string shortcutPath = put + @"\" + name[name.Length - 1].Split('.')[0] + @".lnk";
+
+                //создаем объект ярлыка
+                IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(shortcutPath);
+
+                //задаем свойства для ярлыка
+                //описание ярлыка в всплывающей подсказке
+                shortcut.Description = "Ярлык для текстового редактора";
+                //путь к самой программе
+                shortcut.TargetPath = filePath;
+                //Создаем ярлык
+                shortcut.Save();
+            }
+            reload();
         }
 
         private void Open_Click(object sender, EventArgs e)
         {
             Process.Start(put);
+        }
+
+        private ServiceController[] services = ServiceController.GetServices();
+
+        private void service_reload()
+        {
+            services = ServiceController.GetServices();
+            checkedListBox4.Items.Clear();
+            foreach (ServiceController service in services)
+            {
+                if (service.StartType == ServiceStartMode.Automatic)
+                {
+                    checkedListBox4.Items.Add(service.DisplayName);
+                }
+            }
+        }
+
+        private void Service_seach_Click(object sender, EventArgs e)
+        {
+            service_reload();
+        }
+
+        private void disable_Click(object sender, EventArgs e)
+        {
+            var check = checkedListBox4.CheckedItems;
+            if (checkedListBox4.CheckedItems != null)
+            {
+                for (int i = 0; i < check.Count; i++)
+                {
+                    foreach (ServiceController service in services)
+                    {
+                        if (check[i].ToString() == service.DisplayName)
+                        {
+                            ServiceHelper.ChangeStartMode(service, ServiceStartMode.Manual);
+                        }
+                    }
+                }
+            }
+            service_reload();
+        }
+        public static class ServiceHelper
+        {
+            [DllImport("advapi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+            public static extern Boolean ChangeServiceConfig(
+                IntPtr hService,
+                UInt32 nServiceType,
+                UInt32 nStartType,
+                UInt32 nErrorControl,
+                String lpBinaryPathName,
+                String lpLoadOrderGroup,
+                IntPtr lpdwTagId,
+                [In] char[] lpDependencies,
+                String lpServiceStartName,
+                String lpPassword,
+                String lpDisplayName);
+
+            [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+            static extern IntPtr OpenService(
+                IntPtr hSCManager, string lpServiceName, uint dwDesiredAccess);
+
+            [DllImport("advapi32.dll", EntryPoint = "OpenSCManagerW", ExactSpelling = true, CharSet = CharSet.Unicode, SetLastError = true)]
+            public static extern IntPtr OpenSCManager(
+                string machineName, string databaseName, uint dwAccess);
+
+            [DllImport("advapi32.dll", EntryPoint = "CloseServiceHandle")]
+            public static extern int CloseServiceHandle(IntPtr hSCObject);
+
+            private const uint SERVICE_NO_CHANGE = 0xFFFFFFFF;
+            private const uint SERVICE_QUERY_CONFIG = 0x00000001;
+            private const uint SERVICE_CHANGE_CONFIG = 0x00000002;
+            private const uint SC_MANAGER_ALL_ACCESS = 0x000F003F;
+
+            public static void ChangeStartMode(ServiceController svc, ServiceStartMode mode)
+            {
+                var scManagerHandle = OpenSCManager(null, null, SC_MANAGER_ALL_ACCESS);
+                if (scManagerHandle == IntPtr.Zero)
+                {
+                    throw new ExternalException("Open Service Manager Error");
+                }
+
+                var serviceHandle = OpenService(
+                    scManagerHandle,
+                    svc.ServiceName,
+                    SERVICE_QUERY_CONFIG | SERVICE_CHANGE_CONFIG);
+
+                if (serviceHandle == IntPtr.Zero)
+                {
+                    throw new ExternalException("Open Service Error");
+                }
+
+                var result = ChangeServiceConfig(
+                    serviceHandle,
+                    SERVICE_NO_CHANGE,
+                    (uint)mode,
+                    SERVICE_NO_CHANGE,
+                    null,
+                    null,
+                    IntPtr.Zero,
+                    null,
+                    null,
+                    null,
+                    null);
+
+                if (result == false)
+                {
+                    int nError = Marshal.GetLastWin32Error();
+                    var win32Exception = new Win32Exception(nError);
+                    throw new ExternalException("Could not change service start type: "
+                        + win32Exception.Message);
+                }
+
+                CloseServiceHandle(serviceHandle);
+                CloseServiceHandle(scManagerHandle);
+            }   
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
