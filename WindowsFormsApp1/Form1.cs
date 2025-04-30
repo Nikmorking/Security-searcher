@@ -135,16 +135,14 @@ namespace WindowsFormsApp1
 
         private void reload()
         {
-            DirectoryInfo dir = new DirectoryInfo(put);
-            checkedListBox1.Items.Clear();
-            FileInfo[] files = dir.GetFiles();
-            for (int i = 0; i < files.Length; i++)
+            forache(string e in put)
             {
                 if (files[i].Name != "desktop.ini")
                 {
                     checkedListBox1.Items.Add(files[i]);
                 }
             }
+            
         }
         private void button1_Click(object sender, EventArgs e)
         {
