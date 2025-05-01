@@ -36,11 +36,11 @@ namespace WindowsFormsApp1
                         box.Items.Add(a[i]);
                         if(box == checkedListBox2)
                         {
-                            local = add_path(local, paths_array[i]);
+                            user = add_path(user, paths_array[c]);
                         }
                         if (box == checkedListBox3)
                         {
-                            local = add_path(user, paths_array[i]);
+                            local = add_path(local, paths_array[c]);
                         }
                     }
                 }
@@ -49,10 +49,12 @@ namespace WindowsFormsApp1
 
         private string[] add_path(string[] math, string path)
         {
-            string[] mass = new string[math.Length];
-            for (int i = 0; i < math.Length - 1; i++)
+            string[] mass = new string[math.Length + 1];
+            for (int i = 0; i < math.Length; i++)
+            {
                 mass[i] = math[i];
-            mass[math.Length - 1] = path;
+            }
+            mass[math.Length] = path;
             return mass;
         }
         private string[] paths_array = new string[3] { "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", "SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Run", "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run" };
@@ -131,19 +133,29 @@ namespace WindowsFormsApp1
             }
         }
 
-        private string put = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup";
+        private string[] put = { Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup", @"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp" };
 
         private void reload()
         {
-            DirectoryInfo dir = new DirectoryInfo(put);
             checkedListBox1.Items.Clear();
-            FileInfo[] files = dir.GetFiles();
-            for (int i = 0; i < files.Length; i++)
+            try
             {
-                if (files[i].Name != "desktop.ini")
+                foreach(string e in put)
                 {
-                    checkedListBox1.Items.Add(files[i]);
+                    DirectoryInfo dir = new DirectoryInfo(e);
+                    FileInfo[] files = dir.GetFiles();
+                    for (int i = 0; i < files.Length; i++)
+                    {
+                        if (files[i].Name != "desktop.ini")
+                        {
+                            checkedListBox1.Items.Add(files[i]);
+                        }
+                    }
                 }
+            }
+            catch
+            {
+                label3.Text = "Папка с автозагрусками\r\nне найдена\r\nЗапустите от имени\r\nАдминистратора";
             }
         }
         private void button1_Click(object sender, EventArgs e)
@@ -190,7 +202,7 @@ namespace WindowsFormsApp1
 
                 string[] name = filePath.Split(Convert.ToChar(@"\"));
                 //путь к ярлыку
-                string shortcutPath = put + @"\" + name[name.Length - 1].Split('.')[0] + @".lnk";
+                string shortcutPath = put[0] + @"\" + name[name.Length - 1].Split('.')[0] + @".lnk";
 
                 //создаем объект ярлыка
                 IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(shortcutPath);
@@ -208,7 +220,10 @@ namespace WindowsFormsApp1
 
         private void Open_Click(object sender, EventArgs e)
         {
-            Process.Start(put);
+            foreach (string n in put)
+            {
+                Process.Start(n);
+            }
         }
 
         private ServiceController[] services = ServiceController.GetServices();
@@ -327,7 +342,21 @@ namespace WindowsFormsApp1
 
         private void button3_Click(object sender, EventArgs e)
         {
-
+            for (int i = 0; i < checkedListBox2.Items.Count; i++)
+            {
+                if (checkedListBox2.GetItemChecked(i))
+                {
+                    Registry.CurrentUser.OpenSubKey(user[i], true).DeleteValue(checkedListBox2.Items[i].ToString());
+                }
+            }
+            for (int i = 0; i < checkedListBox3.Items.Count; i++)
+            {
+                if (checkedListBox3.GetItemChecked(i))
+                {
+                    Registry.LocalMachine.OpenSubKey(local[i], true).DeleteValue(checkedListBox3.Items[i].ToString());
+                }
+            }
+            button2_Click(sender, e);
         }
     }
 }
