@@ -155,7 +155,7 @@ namespace WindowsFormsApp1
             }
             catch
             {
-                label3.Text = "Папка с автозагрусками\r\nне найдена\r\nЗапустите от имени\r\nАдминистратора";
+                MessageBox.Show("Папка с автозагрусками\r\nне найдена\r\nЗапустите от имени\r\nАдминистратора");
             }
         }
         private void button1_Click(object sender, EventArgs e)
