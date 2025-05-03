@@ -68,70 +68,6 @@ namespace WindowsFormsApp1
             add_list(Registry.CurrentUser, checkedListBox2);
             add_list(Registry.LocalMachine, checkedListBox3);
         }
-        private static void load()
-        {
-
-            int a;
-
-
-
-            Console.WriteLine("\n\n\n\n\nHKEY_LOCAL_MACHINE:\n");
-
-
-
-            if (Registry.LocalMachine.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders").GetValue("Common Startup").ToString() == "%USERPROFILE%\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup")
-            {
-                try
-                {
-                    Registry.LocalMachine.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders", true).SetValue("Common Startup", "%USERPROFILE%\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup");
-                    Console.WriteLine("Автозагрузка на пути HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders была исправлен");
-                }
-                catch
-                {
-                    Console.WriteLine("К сожалению, у нас не получилось заменить автозагруску в редакторе реестра по пути HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\\Backup, либо данная папка отсутствует!\n");
-                }
-            }
-            else
-            {
-                Console.WriteLine("На пути HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders не найдено автозагрузок!\n");
-            }
-
-
-            if (Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders").GetValue("Startup").ToString() == "%ProgramData%\\Microsoft\\Windows\\Start Menu\\Programs\\Startup")
-            {
-                try
-                {
-                    Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders", true).SetValue("Startup", "%ProgramData%\\Microsoft\\Windows\\Start Menu\\Programs\\Startup");
-                    Console.WriteLine("Автозагрузка на пути CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders была исправлен");
-                }
-                catch
-                {
-                    Console.WriteLine("К сожалению, у нас не получилось заменить автозагруску в редакторе реестра по пути HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders, либо данная папка отсутствует!\n\n");
-                }
-            }
-            else
-            {
-                Console.WriteLine("На пути HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders не найдено автозагрузок!\n\n");
-            }
-
-
-            if (Registry.LocalMachine.OpenSubKey("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon").GetValue("Shell").ToString() != "explorer.exe")
-            {
-                try
-                {
-                    Registry.LocalMachine.OpenSubKey("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon", true).SetValue("Shell", "explorer.exe");
-                    Console.WriteLine("Shell на пути HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon был исправлен");
-                }
-                catch
-                {
-                    Console.WriteLine("Не получилось заменить значение Shell на пути HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon, скорее всего у приожения недостаточно прав!\nЗапустите приложение от имени администратора\n\n");
-                }
-            }
-            else
-            {
-                Console.WriteLine("Shell на пути HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon не найдено автозагрузок!\n\n");
-            }
-        }
 
         private string[] put = { Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup", @"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp" };
 
@@ -228,13 +164,13 @@ namespace WindowsFormsApp1
 
         private ServiceController[] services = ServiceController.GetServices();
 
-        private void service_reload()
+        private void service_reload(bool auto)
         {
             services = ServiceController.GetServices();
             checkedListBox4.Items.Clear();
             foreach (ServiceController service in services)
             {
-                if (service.StartType == ServiceStartMode.Automatic)
+                if ((service.StartType == ServiceStartMode.Automatic)==auto)
                 {
                     checkedListBox4.Items.Add(service.DisplayName);
                 }
@@ -243,7 +179,7 @@ namespace WindowsFormsApp1
 
         private void Service_seach_Click(object sender, EventArgs e)
         {
-            service_reload();
+            service_reload(true);
         }
 
         private void disable_Click(object sender, EventArgs e)
@@ -262,7 +198,7 @@ namespace WindowsFormsApp1
                     }
                 }
             }
-            service_reload();
+            service_reload(true);
         }
         public static class ServiceHelper
         {
@@ -358,6 +294,134 @@ namespace WindowsFormsApp1
             }
             button2_Click(sender, e);
         }
+        private bool add = false;
+        private void button4_Click(object sender, EventArgs e)
+        {
+            label6.Text = "Выбирете службы, которые хотите добавить и нажмите ОК";
+            service_reload(false);
+            add = true;
+            button5.Visible = true;
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            if (add)
+            {
+                if(checkedListBox4.CheckedItems != null)
+                {
+                    foreach (string nid in checkedListBox4.CheckedItems)
+                    {
+                        foreach(ServiceController serv in services)
+                        {
+                            if (serv.DisplayName == nid)
+                            {
+                                ServiceHelper.ChangeStartMode(serv, ServiceStartMode.Automatic);
+                            }
+                        }
+                        
+                    }
+                }
+            }
+            service_reload(true);
+            add = false;
+            label6.Text = "Службы в режиме автозагрузки:";
+            button5.Visible = false;
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            richTextBox1.Text = "";
+            richTextBox1.Text += "\nHKEY_LOCAL_MACHINE:\n";
+
+
+            if (Registry.LocalMachine.OpenSubKey("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon").GetValue("Shell").ToString() != "explorer.exe")
+            {
+                try
+                {
+                    Registry.LocalMachine.OpenSubKey("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon", true).SetValue("Shell", "explorer.exe");
+                    richTextBox1.Text += "На пути HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon был исправлен";
+                }
+                catch
+                {
+                    richTextBox1.Text += "Не получилось заменить значение Shell на пути HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon, скорее всего у приожения недостаточно прав!\nЗапустите приложение от имени администратора\n\n";
+                }
+            }
+            else
+            {
+                richTextBox1.Text += "На пути HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon не найдено автозагрузок!\n";
+            }
+
+            if (Registry.LocalMachine.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders").GetValue("Common Startup").ToString() == "%USERPROFILE%\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup")
+            {
+                try
+                {
+                    Registry.LocalMachine.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders", true).SetValue("Common Startup", "%USERPROFILE%\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup");
+                    richTextBox1.Text += "Автозагрузка на пути HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders была исправлен";
+                }
+                catch
+                {
+                    richTextBox1.Text += "К сожалению, у нас не получилось заменить автозагрузку в редакторе реестра по пути HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\\Backup, либо данная папка отсутствует!\n";
+                }
+            }
+            else
+            {
+                richTextBox1.Text += "На пути HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders не найдено автозагрузок!\n";
+            }
+
+            if(Registry.LocalMachine.OpenSubKey("SYSTEM\\Setup").GetValue("CmdLine").ToString() == "")
+            {
+                richTextBox1.Text += "На пути HKEY_LOCAL_MACHINE\\SYSTEM\\Setup\\CmdLine нет автозагрузок\n";
+            }
+            else
+            {
+                try
+                {
+                    Registry.LocalMachine.OpenSubKey("SYSTEM\\Setup").SetValue("CmdLine", "");
+                    richTextBox1.Text += "Автозагрузка на пути HKEY_LOCAL_MACHINE\\SYSTEM\\Setup\\CmdLine была исправлен\n";
+                }
+                catch
+                {
+                    richTextBox1.Text += "К сожалению, у нас не получилось заменить автозагрузку в редакторе реестра по пути HKEY_LOCAL_MACHINE\\SYSTEM\\Setup\\CmdLine, либо данная папка отсутствует!\n";
+                }
+            }
+
+            if (Registry.LocalMachine.OpenSubKey("SYSTEM\\Setup").GetValue("SetupType").ToString() == "0")
+            {
+                richTextBox1.Text += "Значение на пути HKEY_LOCAL_MACHINE\\SYSTEM\\Setup\\SetupType стандартное\n";
+            }
+            else
+            {
+                try
+                {
+                    Registry.LocalMachine.OpenSubKey("SYSTEM\\Setup").SetValue("SetupType", 0);
+                    richTextBox1.Text += "Значение на пути HKEY_LOCAL_MACHINE\\SYSTEM\\Setup\\SetupType было исправлено\n";
+                }
+                catch
+                {
+                    richTextBox1.Text += "К сожалению, у нас не получилось заменить значение в редакторе реестра по пути HKEY_LOCAL_MACHINE\\SYSTEM\\Setup\\SetupType, либо данная папка отсутствует!\n";
+                }
+            }
+
+            richTextBox1.Text += "\nHKEY_CURRENT_USER:\n";
+
+            if (Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders").GetValue("Startup").ToString() == "%ProgramData%\\Microsoft\\Windows\\Start Menu\\Programs\\Startup")
+            {
+                try
+                {
+                    Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders", true).SetValue("Startup", "%ProgramData%\\Microsoft\\Windows\\Start Menu\\Programs\\Startup");
+                    richTextBox1.Text += "Автозагрузка на пути CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders была исправлен";
+                }
+                catch
+                {
+                    richTextBox1.Text += "К сожалению, у нас не получилось заменить автозагруску в редакторе реестра по пути HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders, либо данная папка отсутствует!\n\n";
+                }
+            }
+            else
+            {
+                richTextBox1.Text += "На пути HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders не найдено автозагрузок!\n\n";
+            }
+        }
+
     }
 }
 
