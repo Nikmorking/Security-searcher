@@ -18,6 +18,7 @@ using System.Runtime.InteropServices;
 namespace WindowsFormsApp1
 {
     public partial class Form1 : Form
+
     {
         public Form1()
         {
@@ -91,7 +92,7 @@ namespace WindowsFormsApp1
             }
             catch
             {
-                MessageBox.Show("Папка с автозагрусками\r\nне найдена\r\nЗапустите от имени\r\nАдминистратора");
+                MessageBox.Show("Папка с автозагрусками не найдена\r\nЗапустите от имени Администратора");
             }
         }
         private void button1_Click(object sender, EventArgs e)
@@ -237,7 +238,7 @@ namespace WindowsFormsApp1
                 var scManagerHandle = OpenSCManager(null, null, SC_MANAGER_ALL_ACCESS);
                 if (scManagerHandle == IntPtr.Zero)
                 {
-                    throw new ExternalException("Open Service Manager Error");
+                    Debug.WriteLine("Error");
                 }
 
                 var serviceHandle = OpenService(
@@ -247,7 +248,7 @@ namespace WindowsFormsApp1
 
                 if (serviceHandle == IntPtr.Zero)
                 {
-                    throw new ExternalException("Open Service Error");
+                    Debug.WriteLine("Error");
                 }
 
                 var result = ChangeServiceConfig(
@@ -267,8 +268,7 @@ namespace WindowsFormsApp1
                 {
                     int nError = Marshal.GetLastWin32Error();
                     var win32Exception = new Win32Exception(nError);
-                    throw new ExternalException("Could not change service start type: "
-                        + win32Exception.Message);
+                    MessageBox.Show("Не удалость изменить состояние автозагрузки\r\nЗапустите от имени Администратора");
                 }
 
                 CloseServiceHandle(serviceHandle);
@@ -422,6 +422,10 @@ namespace WindowsFormsApp1
             }
         }
 
+        private void button7_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
 
