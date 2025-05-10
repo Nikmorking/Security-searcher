@@ -72,20 +72,32 @@ namespace WindowsFormsApp1
 
         private string[] put = { Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup", @"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp" };
 
-        private void reload()
+        private void reload(int o)
         {
-            checkedListBox1.Items.Clear();
+            if (o == 0)
+            {
+                checkedListBox1.Items.Clear();
+            }
+            if (o == 1)
+            {
+                checkedListBox5.Items.Clear();
+            }
             try
             {
-                foreach(string e in put)
+                
+                DirectoryInfo dir = new DirectoryInfo(put[o]);
+                FileInfo[] files = dir.GetFiles();
+                for (int i = 0; i < files.Length; i++)
                 {
-                    DirectoryInfo dir = new DirectoryInfo(e);
-                    FileInfo[] files = dir.GetFiles();
-                    for (int i = 0; i < files.Length; i++)
+                    if (files[i].Name != "desktop.ini")
                     {
-                        if (files[i].Name != "desktop.ini")
+                        if(o == 0)
                         {
                             checkedListBox1.Items.Add(files[i]);
+                        }
+                        if (o == 1)
+                        {
+                            checkedListBox5.Items.Add(files[i]);
                         }
                     }
                 }
@@ -94,10 +106,11 @@ namespace WindowsFormsApp1
             {
                 MessageBox.Show("Папка с автозагрусками не найдена\r\nЗапустите от имени Администратора");
             }
+
         }
         private void button1_Click(object sender, EventArgs e)
         {
-            reload();
+            reload(0);
         }
 
 
@@ -112,13 +125,22 @@ namespace WindowsFormsApp1
                     item.Delete();
                 }
             }
-            reload();
+            sel = checkedListBox5.CheckedItems;
+            if (sel != null)
+            {
+                foreach (FileInfo item in sel)
+                {
+                    item.Delete();
+                }
+            }
+            reload(0);
+            reload(1);
         }
 
 
-        private void Add__Click(object sender, EventArgs e)
+        private void Add(int o)
         {
-            var filePath = string.Empty;
+            string filePath = "";
 
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
@@ -133,13 +155,13 @@ namespace WindowsFormsApp1
                     filePath = openFileDialog.FileName;
                 }
             }
-            if (filePath != null)
+            if (filePath != "")
             {
                 WshShell shell = new WshShell();
 
                 string[] name = filePath.Split(Convert.ToChar(@"\"));
                 //путь к ярлыку
-                string shortcutPath = put[0] + @"\" + name[name.Length - 1].Split('.')[0] + @".lnk";
+                string shortcutPath = put[o] + @"\" + name[name.Length - 1].Split('.')[0] + @".lnk";
 
                 //создаем объект ярлыка
                 IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(shortcutPath);
@@ -152,7 +174,13 @@ namespace WindowsFormsApp1
                 //Создаем ярлык
                 shortcut.Save();
             }
-            reload();
+            reload(0);
+            reload(1);
+        }
+
+        private void Add__Click(object sender, EventArgs e)
+        {
+            Add(0);
         }
 
         private void Open_Click(object sender, EventArgs e)
@@ -424,7 +452,14 @@ namespace WindowsFormsApp1
 
         private void button7_Click(object sender, EventArgs e)
         {
-
+            try
+            {
+                Add(1);
+            }
+            catch
+            {
+                MessageBox.Show("Папка с автозагрусками не найдена\r\nЗапустите от имени Администратора");
+            }
         }
     }
 }
