@@ -14,6 +14,7 @@ using System.Windows.Forms;
 using Microsoft.Win32;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using System.Runtime.InteropServices;
+using System.Diagnostics.Eventing.Reader;
 
 namespace WindowsFormsApp1
 {
@@ -23,6 +24,7 @@ namespace WindowsFormsApp1
         public Form1()
         {
             InitializeComponent();
+            services = ServiceController.GetServices();
         }
 
         private void add_list(RegistryKey key, CheckedListBox box)
@@ -58,16 +60,33 @@ namespace WindowsFormsApp1
             mass[math.Length] = path;
             return mass;
         }
-        private string[] paths_array = new string[3] { "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", "SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Run", "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run" };
+        private string[] paths_array = { "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", "SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Run", "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run" };
         private string[] local = new string[0];
         private string[] user = new string[0];
 
         private void button2_Click(object sender, EventArgs e)
         {
+            //ДОБАВЛЕНИЕ СТРОКИ ##################################################################################################################
             checkedListBox2.Items.Clear(); //Очищает список
             checkedListBox3.Items.Clear(); //Очищает список
             add_list(Registry.CurrentUser, checkedListBox2);
             add_list(Registry.LocalMachine, checkedListBox3);
+            if(checkedListBox2.Items.Count == 0)
+            {
+                label11.Visible = true;
+            }
+            else
+            {
+                label11.Visible = false;
+            }
+            if (checkedListBox3.Items.Count == 0)
+            {
+                label12.Visible = true;
+            }
+            else
+            {
+                label12.Visible = false;
+            }
         }
 
         private string[] put = { Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup", @"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp" };
@@ -106,11 +125,28 @@ namespace WindowsFormsApp1
             {
                 MessageBox.Show("Папка с автозагрусками не найдена\r\nЗапустите от имени Администратора");
             }
+            if (checkedListBox1.Items.Count == 0)
+            {
+                label10.Visible = true;
+            }
+            else
+            {
+                label10.Visible = false;
+            }
+            if (checkedListBox5.Items.Count == 0)
+            {
+                label13.Visible = true;
+            }
+            else
+            {
+                label13.Visible = false;
+            }
 
         }
         private void button1_Click(object sender, EventArgs e)
         {
             reload(0);
+            reload(1);
         }
 
 
@@ -191,15 +227,26 @@ namespace WindowsFormsApp1
             }
         }
 
-        private ServiceController[] services = ServiceController.GetServices();
+        private ServiceController[] services;
+        private string[] system = { "Средство построения конечных точек Windows Audio", "Служба базовой фильтрации", "Служба инфраструктуры фоновых задач", "Служба платформы подключенных устройств", "CoreMessaging", "Модуль запуска процессов DCOM-сервера", "Служба сопоставления устройств", "DHCP-клиент", "Функциональные возможности для подключенных пользователей и телеметрия", "Служба политики отображения", "DNS-клиент", "Использование данных", "Журнал событий Windows", "Система событий COM+", "Служба кэша шрифтов Windows", "Клиент групповой политики" };
 
         private void service_reload(bool auto)
         {
-            services = ServiceController.GetServices();
+            for (int i = 0; i < services.Length; i++)
+            {
+                foreach (string name in system)
+                {
+                    if(services[i].DisplayName == name)
+                    {
+                        ServiceController[] newarr = services.Where(s => s != services[i]).ToArray();
+                        services = newarr;
+                    }
+                }
+            }
             checkedListBox4.Items.Clear();
             foreach (ServiceController service in services)
             {
-                if ((service.StartType == ServiceStartMode.Automatic)==auto)
+                if ((service.StartType == ServiceStartMode.Automatic) == auto)
                 {
                     checkedListBox4.Items.Add(service.DisplayName);
                 }
@@ -360,31 +407,33 @@ namespace WindowsFormsApp1
         {
             richTextBox1.Text = "";
             richTextBox1.Text += "\nHKEY_LOCAL_MACHINE:\n";
-
+            richTextBox1.Text = Registry.LocalMachine.OpenSubKey("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon").GetValue("Shell").ToString();
+            string a = Registry.LocalMachine.OpenSubKey("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon").GetValue("Shell").ToString();
 
             if (Registry.LocalMachine.OpenSubKey("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon").GetValue("Shell").ToString() != "explorer.exe")
             {
-                try
-                {
-                    Registry.LocalMachine.OpenSubKey("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon", true).SetValue("Shell", "explorer.exe");
-                    richTextBox1.Text += "На пути HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon был исправлен";
-                }
-                catch
-                {
-                    richTextBox1.Text += "Не получилось заменить значение Shell на пути HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon, скорее всего у приожения недостаточно прав!\nЗапустите приложение от имени администратора\n\n";
-                }
+                Registry.LocalMachine.OpenSubKey("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon", true).SetValue("Shell", "explorer.exe");
+                //try
+                //{
+                //Registry.LocalMachine.OpenSubKey("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon", true).SetValue("Shell", "explorer.exe");
+                //richTextBox1.Text += "На пути HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon был исправлен";
+                //}
+                //catch
+                //{
+                //richTextBox1.Text += "Не получилось заменить значение Shell на пути HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon, скорее всего у приожения недостаточно прав!\nЗапустите приложение от имени администратора\n\n";
+                //}
             }
             else
             {
                 richTextBox1.Text += "На пути HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon не найдено автозагрузок!\n";
             }
 
-            if (Registry.LocalMachine.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders").GetValue("Common Startup").ToString() == "%USERPROFILE%\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup")
+            if (Registry.LocalMachine.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders").GetValue("Common Startup").ToString() != "%ProgramData%\\Microsoft\\Windows\\Start Menu\\Programs\\Startup")
             {
                 try
                 {
-                    Registry.LocalMachine.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders", true).SetValue("Common Startup", "%USERPROFILE%\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup");
-                    richTextBox1.Text += "Автозагрузка на пути HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders была исправлен";
+                    Registry.LocalMachine.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders", true).SetValue("Common Startup", "%ProgramData%\\Microsoft\\Windows\\Start Menu\\Programs\\Startup");
+                    richTextBox1.Text += "Автозагрузка на пути HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders была исправлен\n";
                 }
                 catch
                 {
@@ -409,7 +458,7 @@ namespace WindowsFormsApp1
                 }
                 catch
                 {
-                    richTextBox1.Text += "К сожалению, у нас не получилось заменить автозагрузку в редакторе реестра по пути HKEY_LOCAL_MACHINE\\SYSTEM\\Setup\\CmdLine, либо данная папка отсутствует!\n";
+                    richTextBox1.Text += "К сожалению, у нас не получилось заменить автозагрузку в редакторе реестра по пути HKEY_LOCAL_MACHINE\\SYSTEM\\Setup\\CmdLine, либо данная папка отсутствует!\n Измените значение на ' '\n";
                 }
             }
 
@@ -426,7 +475,7 @@ namespace WindowsFormsApp1
                 }
                 catch
                 {
-                    richTextBox1.Text += "К сожалению, у нас не получилось заменить значение в редакторе реестра по пути HKEY_LOCAL_MACHINE\\SYSTEM\\Setup\\SetupType, либо данная папка отсутствует!\n";
+                    richTextBox1.Text += "К сожалению, у нас не получилось заменить значение в редакторе реестра по пути HKEY_LOCAL_MACHINE\\SYSTEM\\Setup\\SetupType, либо данная папка отсутствует! Попробуйте запустить от имени администратора.\n Или измените значение StartType на 0\n";
                 }
             }
 
